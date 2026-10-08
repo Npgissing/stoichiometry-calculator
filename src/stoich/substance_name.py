@@ -1,0 +1,152 @@
+import mendeleev as md
+import re
+import stoich.formula_parser as fp
+POLYATOMIC_IONS = fp.POLYATOMIC_IONS
+ELEMENT_SYMBOLS = fp.ELEMENT_SYMBOLS
+SET_CHARGE_CATIONS = {"Al": 3, "Zn": 2, "Cd": 2, "Ag": 1, "Sc": 3, "Y": 3, "La": 3, "Ac": 3}
+ELEMENT_STEMS = {"N" : "Nitr", "O" : "Ox", "F" : "Fluor", "P" : "Phosph", "S" : "Sulf", "Cl" : "Chlor", "Se" : "Selen", "Br" : "Brom", "I" : "Iod"}
+
+# This module contains functions to name chemical compounds based on their a list of the elements and polyatomic ions present
+
+def name_compound_simple(poly_element_dict : dict[str, int]) -> str:
+    # iterate through the elements in the compound and check if any of them are metals
+    if fp.is_ionic(poly_element_dict):
+        return name_ionic_compound(poly_element_dict)
+    # if the compound does not contain a metal or a polyatomic ion, it is a covalent compound
+    else:
+        return name_covalent_compound(poly_element_dict)
+
+def name_ionic_compound(poly_element_dict : dict[str, int]) -> str:
+    # returns the name of an ionic compound (cation and anion)
+    # separate the cation and anion based on the elements present
+    cation = ""
+    anion = ""
+    for poly_element in poly_element_dict:
+        if poly_element in POLYATOMIC_IONS:
+            if poly_element == "NH4" or poly_element == "Hg2":
+                cation = poly_element
+            else:
+                anion = poly_element
+        else:
+            element_instance = md.element(poly_element)
+            if element_instance is None:
+                raise ValueError(f"Invalid element symbol: {poly_element}")
+            if element_instance.series in ["Alkali metals", "Alkaline earth metals", "Transition metals", "Poor metals", "Lanthanides", "Actinides"]:
+                cation = poly_element
+            else:
+                anion = poly_element
+    if not cation:
+        raise ValueError("Invalid ionic compound: missing cation")
+    if not anion:
+        raise ValueError("Invalid ionic compound: missing anion")
+    if cation and anion:
+        return f"{name_cation(cation, anion, poly_element_dict)} {name_anion(anion)}"
+ 
+def name_covalent_compound(poly_element_dict : dict[str, int]) -> str:
+    # returns the name of a covalent compound
+    prefixes = ["Mono", "Di", "Tri", "Tetra", "Penta", "Hexa", "Hepta", "Octa", "Nona", "Deca"]
+    covalent_name = ""
+    element_place = 1
+    # iterate through the element symbols and counts
+    for element, count in poly_element_dict.items():
+        element_instance = md.element(element)
+        # verify the element is valid
+        if element_instance is None:
+            raise ValueError(f"Invalid element symbol: {element}")
+        # if the element is the first one
+        if element_place == 1:
+            # if the count is 1, leave off the prefix
+            if count == 1:
+                covalent_name += element_instance.name
+            # otherwise include the prefix
+            else:
+                covalent_name += f"{prefixes[count - 1]}{element_instance.name.lower()} "
+        else:
+            #include the prefix for the second element
+            covalent_name += f"{prefixes[count - 1].lower()}{ELEMENT_STEMS[element].lower()}ide"
+        element_place += 1
+    # remove the double vowels
+    covalent_name = re.sub(r"(oo|ao)", r"o", covalent_name).strip()
+    return covalent_name
+
+def name_cation(cation : str, anion : str, poly_element_dict : dict[str, int]) -> str:
+    # returns the name of a cation
+    if fp.is_polyatomic_ion(cation):
+        for polyatomic_ion in POLYATOMIC_IONS:
+            if cation in polyatomic_ion:
+                return POLYATOMIC_IONS[polyatomic_ion][0]
+    else:
+        element_instance = md.element(cation)
+        if element_instance is None:
+            raise ValueError(f"Invalid element symbol: {cation}")
+        elif element_instance.symbol in SET_CHARGE_CATIONS or element_instance.series in ["Alkali metals", "Alkaline earth metals"]:
+            return f"{element_instance.name}"
+        else:
+            return f"{element_instance.name} ({roman_numeral(get_cation_charge(cation, anion, poly_element_dict))})"
+
+def name_anion(anion : str) -> str:
+    # returns the name of an anion
+    if fp.is_polyatomic_ion(anion):
+        for polyatomic_ion in POLYATOMIC_IONS:
+            if anion in polyatomic_ion:
+                return POLYATOMIC_IONS[polyatomic_ion][0]
+    else:
+        element_instance = md.element(anion)
+        if element_instance is None:
+            raise ValueError(f"Invalid element symbol: {anion}")
+        elif element_instance.symbol in ELEMENT_STEMS:
+            return f"{ELEMENT_STEMS[element_instance.symbol]}ide"
+        else:
+            raise ValueError(f"Element stem not known: {anion}")
+
+def get_cation_charge(cation : str, anion : str, poly_element_dict : dict[str, int]) -> int:
+    # returns the charge of a cation based on the anion and the polyatomic ions present in the compound
+    anion_charge = 0
+    # if the cation is a polyatomic ion, get its charge from the POLYATOMIC_IONS list
+    if fp.is_polyatomic_ion(cation):
+        for polyatomic_ion in POLYATOMIC_IONS:
+            if cation in polyatomic_ion:
+                cation_charge = POLYATOMIC_IONS[polyatomic_ion][1]
+                break
+    # if the cation is an element, check if it is in the SET_CHARGE_CATIONS dictionary or if it is an alkali or alkaline earth metal
+    elif cation in SET_CHARGE_CATIONS:
+        cation_charge = SET_CHARGE_CATIONS[cation]
+    else:
+        cation_element_instance = md.element(cation)
+        if cation_element_instance is None:
+            raise ValueError(f"Invalid element symbol: {cation}")
+        # if the cation is an alkali or alkaline earth metal, get its charge from its group number
+        elif cation_element_instance.series in ["Alkali metals", "Alkaline earth metals"]:
+            cation_charge = cation_element_instance.group_id
+    # if the anion is a polyatomic ion, get its charge from the POLYATOMIC_IONS list
+    if fp.is_polyatomic_ion(anion):
+        for polyatomic_ion in POLYATOMIC_IONS:
+            if anion in polyatomic_ion:
+                anion_charge = POLYATOMIC_IONS[polyatomic_ion][1]
+                break
+    # if the anion is an element, get its charge from its group number (subtracting 8 to get the negative charge)
+    else:
+        anion_element_instance = md.element(anion)
+        if anion_element_instance is None:
+            raise ValueError(f"Invalid element symbol: {anion}")
+        anion_charge = anion_element_instance.group_id - 18
+    if cation in poly_element_dict and anion in poly_element_dict:
+        cation_count = poly_element_dict[cation]
+        anion_count = poly_element_dict[anion]
+    else:
+        raise ValueError(f"Invalid cation or anion: {cation}, {anion}")
+    # calculate the total charge of the cation and anion
+    total_anion_charge = anion_charge * anion_count
+    cation_charge = -1 * (total_anion_charge // cation_count)
+    return cation_charge
+
+def roman_numeral(num : int) -> str:
+    # returns the roman numeral representation of a number
+    roman_numerals = {50 : "L", 40 : "XL", 10 : "X", 9 : "IX", 5 : "V", 4 : "IV", 1 : "I"}
+
+    roman_num = ""
+    for roman_number in roman_numerals:
+        count = num // roman_number
+        roman_num += roman_numerals[roman_number] * count
+        num -= (count * roman_number)
+    return roman_num

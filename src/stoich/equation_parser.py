@@ -1,7 +1,7 @@
 import re
 import sympy as sp
-from stoich.substance import Substance
-import stoich.formula_parser as fp
+from src.stoich.substance import Substance
+import src.stoich.formula_parser as fp
 
 # This module contains functions for parsing and balancing chemical equations.
 

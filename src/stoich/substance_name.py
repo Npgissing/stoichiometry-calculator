@@ -1,6 +1,6 @@
 import mendeleev as md
 import re
-import stoich.formula_parser as fp
+import src.stoich.formula_parser as fp
 POLYATOMIC_IONS = fp.POLYATOMIC_IONS
 ELEMENT_SYMBOLS = fp.ELEMENT_SYMBOLS
 SET_CHARGE_CATIONS = {"Al": 3, "Zn": 2, "Cd": 2, "Ag": 1, "Sc": 3, "Y": 3, "La": 3, "Ac": 3}

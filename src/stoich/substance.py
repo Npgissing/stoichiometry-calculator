@@ -1,6 +1,6 @@
 import mendeleev as md
-import stoich.formula_parser as fp
-import stoich.substance_name as name
+import src.stoich.formula_parser as fp
+import src.stoich.substance_name as name
 
 # Substance class representing a chemical substance with its properties and methods
 

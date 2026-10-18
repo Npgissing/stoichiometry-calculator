@@ -5,11 +5,11 @@ import src.stoich.formula_parser as fp
 
 # This module contains functions for parsing and balancing chemical equations.
 
-def parse_equation(equation : str) -> None:
+def parse_equation(equation : str) -> list[Substance]:
     if re.search(r"(<=>|<->)", equation):
-        parse_equilibrium(equation)
+        return parse_equilibrium(equation)
     elif re.search(r"->", equation):
-        parse_reaction(equation)
+        return parse_reaction(equation)
     else:
         raise ValueError(f"Equation not formatted correctly: {equation}")
 

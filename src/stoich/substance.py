@@ -21,6 +21,9 @@ class Substance:
     def __repr__(self):
         return f"Substance(formula='{self.formula}', molar_mass={self.molar_mass}, charge={self.charge}, name='{self.name}', is_ion={self.is_ion}, is_polyatomic_ion={self.is_polyatomic_ion}, is_reactant={self.is_reactant}, is_product={self.is_product})"
 
+    def __str__(self):
+        return f"Substance: {self.formula}, Name: {self.name}"
+
     def get_count(self, poly_element : str) -> int:
         # returns the count of a certain element or polyatomic ion in a substance
         # if the element or polyatomic ion isn't in the substance, return 0
@@ -28,4 +31,11 @@ class Substance:
             return self.poly_element_dict[poly_element]
         else:
             return 0
-        
+
+    def  get_moles(self, mass : float) -> float:
+        # returns the number of moles of a substance given the mass in grams
+        return mass / self.molar_mass
+
+    def get_mass(self, moles : float) -> float:
+        # returns the mass in grams of a substance given the number of moles
+        return moles * self.molar_mass

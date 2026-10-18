@@ -2,7 +2,12 @@ import mendeleev as md
 import re
 
 POLYATOMIC_IONS = {"NH4" : ("Ammonium", 1), "NO2" : ("Nitrite", -1), "NO3" : ("Nitrate", -1), "SO3" : ("Sulfite", -2), "SO4" : ("Sulfate", -2), "HSO4" : ("Hydrogen Sulfate", -1), "S2O3" : ("Thiosulfate", -2), "C2O4" : ("Oxalate", -2), "OH" : ("Hydroxide", -1), "PO3" : ("Phosphite", -3), "PO4" : ("Phosphate", -3), "HPO4" : ("Hydrogen Phosphate", -2), "H2PO4" : ("Diydrogen Phosphate", -1), "ClO4" : ("Perchlorate", -1), "ClO3" : ("Chlorate", -1), "ClO2" : ("Chlorite", -1), "ClO" : ("Hypochlorite", -1), "BrO3" : ("Bromate", -1), "IO3" : ("Iodate", -1), "C2H3O2" : ("Acetate", -1), "CO3" : ("Carbonate", -2), "HCO3" : ("Bicarbonate", -1), "CrO4" : ("Chromate",-2), "Cr2O7" : ("Dichromate",-2), "MnO4" : ("Permanganate",-1) , "CN" : ("Cyanide",-1), "OCN" : ("Cyanate",-1), "SCN" : ("Thiocyanate",-1), "Hg2" : ("Mercury(I)", 2), "O2" : ("Peroxide",-2)}
-ELEMENT_SYMBOLS = tuple(element.symbol for element in md.get_all_elements())
+ELEMENT_SYMBOLS = []
+ELEMENT_NAMES = []
+for element in md.get_all_elements():
+    ELEMENT_SYMBOLS.append(element.symbol)
+    ELEMENT_NAMES.append(element.name)
+DIATOMIC_ELEMENTS = ("H", "N", "O", "F", "Cl", "Br", "I")
 
 # This module contains functions to parse chemical formulas into dictionaries of elements and/or polyatomic ions and their counts
 # This module also contains functions to determine characteristics of chemical formulas, such as whether they contain polyatomic ions
@@ -149,6 +154,8 @@ def contains_polyatomic_ions(formula : str) -> bool:
     return False
 
 def is_ionic(poly_element_dict : dict[str, int]) -> bool:
+    if len(poly_element_dict) == 1:
+        return is_ion(list(poly_element_dict.keys())[0])
     # check if the substance is ionic based on the presence of a polyatomic ions or metals
     for poly_element in poly_element_dict:
         if poly_element in POLYATOMIC_IONS:

@@ -30,7 +30,7 @@ def name_compound_simple(poly_element_dict : dict[str, int]) -> str:
     if (len(poly_element_dict) == 1):
         key = list(poly_element_dict.keys())[0]
         element_instance = table.symbol(key)
-        return element_instance.name
+        return element_instance.name.capitalize()
     # iterate through the elements in the compound and check if any of them are metals
     elif fp.is_ionic(poly_element_dict):
         return name_ionic_compound(poly_element_dict)
@@ -80,10 +80,10 @@ def name_covalent_compound(poly_element_dict : dict[str, int]) -> str:
         if element_place == 1:
             # if the count is 1, leave off the prefix
             if count == 1:
-                covalent_name += element_instance.name
+                covalent_name += element_instance.name.capitalize()
             # otherwise include the prefix
             else:
-                covalent_name += f"{prefixes[count - 1]}{element_instance.name.lower()} "
+                covalent_name += f"{prefixes[count - 1].capitalize()}{element_instance.name.lower()} "
         else:
             #include the prefix for the second element
             covalent_name += f"{prefixes[count - 1].lower()}{ELEMENT_STEMS[element].lower()}ide"
@@ -103,9 +103,9 @@ def name_cation(cation : str, anion : str, poly_element_dict : dict[str, int]) -
         except ValueError:
             raise ValueError(f"Invalid element symbol: {cation}")
         if element_instance.symbol in SET_CHARGE_CATIONS or element_instance.series in ("Alkali metals", "Alkaline earth metals"):
-            return f"{element_instance.name}"
+            return f"{element_instance.name.capitalize()}"
         else:
-            return f"{element_instance.name}({roman_numeral(get_cation_charge(cation, anion, poly_element_dict))})"
+            return f"{element_instance.name.capitalize()}({roman_numeral(get_cation_charge(cation, anion, poly_element_dict))})"
 
 def name_anion(anion : str) -> str:
     # returns the name of an anion

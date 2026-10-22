@@ -1,4 +1,3 @@
-import mendeleev as md
 import src.stoich.formula_parser as fp
 import src.stoich.substance_name as name
 

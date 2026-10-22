@@ -1,13 +1,160 @@
-import mendeleev as md
+from src.stoich.table import table
 import re
 
-POLYATOMIC_IONS = {"NH4" : ("Ammonium", 1), "NO2" : ("Nitrite", -1), "NO3" : ("Nitrate", -1), "SO3" : ("Sulfite", -2), "SO4" : ("Sulfate", -2), "HSO4" : ("Hydrogen Sulfate", -1), "S2O3" : ("Thiosulfate", -2), "C2O4" : ("Oxalate", -2), "OH" : ("Hydroxide", -1), "PO3" : ("Phosphite", -3), "PO4" : ("Phosphate", -3), "HPO4" : ("Hydrogen Phosphate", -2), "H2PO4" : ("Diydrogen Phosphate", -1), "ClO4" : ("Perchlorate", -1), "ClO3" : ("Chlorate", -1), "ClO2" : ("Chlorite", -1), "ClO" : ("Hypochlorite", -1), "BrO3" : ("Bromate", -1), "IO3" : ("Iodate", -1), "C2H3O2" : ("Acetate", -1), "CO3" : ("Carbonate", -2), "HCO3" : ("Bicarbonate", -1), "CrO4" : ("Chromate",-2), "Cr2O7" : ("Dichromate",-2), "MnO4" : ("Permanganate",-1) , "CN" : ("Cyanide",-1), "OCN" : ("Cyanate",-1), "SCN" : ("Thiocyanate",-1), "Hg2" : ("Mercury(I)", 2), "O2" : ("Peroxide",-2)}
-ELEMENT_SYMBOLS = []
+POLYATOMIC_IONS = frozendict(
+    {"NH4" : ("Ammonium", 1), 
+     "NO2" : ("Nitrite", -1), 
+     "NO3" : ("Nitrate", -1), 
+     "SO3" : ("Sulfite", -2), 
+     "SO4" : ("Sulfate", -2), 
+     "HSO4" : ("Hydrogen Sulfate", -1), 
+     "S2O3" : ("Thiosulfate", -2), 
+     "C2O4" : ("Oxalate", -2), 
+     "OH" : ("Hydroxide", -1), 
+     "PO3" : ("Phosphite", -3), 
+     "PO4" : ("Phosphate", -3), 
+     "HPO4" : ("Hydrogen Phosphate", -2), 
+     "H2PO4" : ("Diydrogen Phosphate", -1), 
+     "ClO4" : ("Perchlorate", -1), 
+     "ClO3" : ("Chlorate", -1), 
+     "ClO2" : ("Chlorite", -1), 
+     "ClO" : ("Hypochlorite", -1), 
+     "BrO3" : ("Bromate", -1), 
+     "IO3" : ("Iodate", -1), 
+     "C2H3O2" : ("Acetate", -1), 
+     "CO3" : ("Carbonate", -2), 
+     "HCO3" : ("Bicarbonate", -1), 
+     "CrO4" : ("Chromate",-2), 
+     "Cr2O7" : ("Dichromate",-2), 
+     "MnO4" : ("Permanganate",-1) , 
+     "CN" : ("Cyanide",-1), 
+     "OCN" : ("Cyanate",-1), 
+     "SCN" : ("Thiocyanate",-1), 
+     "Hg2" : ("Mercury(I)", 2), 
+     "O2" : ("Peroxide",-2)})
+ELEMENT_SYMBOLS = tuple(
+    ["H", 
+     "He", 
+     "Li", 
+     "Be", 
+     "B", 
+     "C", 
+     "N", 
+     "O", 
+     "F", 
+     "Ne", 
+     "Na", 
+     "Mg", 
+     "Al", 
+     "Si", 
+     "P", 
+     "S", 
+     "Cl", 
+     "Ar", 
+     "K", 
+     "Ca", 
+     "Sc", 
+     "Ti", 
+     "V", 
+     "Cr", 
+     "Mn", 
+     "Fe", 
+     "Co", 
+     "Ni", 
+     "Cu", 
+     "Zn", 
+     "Ga", 
+     "Ge", 
+     "As", 
+     "Se", 
+     "Br", 
+     "Kr", 
+     "Rb", 
+     "Sr", 
+     "Y", 
+     "Zr", 
+     "Nb", 
+     "Mo", 
+     "Tc", 
+     "Ru", 
+     "Rh", 
+     "Pd", 
+     "Ag", 
+     "Cd", 
+     "In", 
+     "Sn", 
+     "Sb", 
+     "Te", 
+     "I", 
+     "Xe", 
+     "Cs", 
+     "Ba", 
+     "La", 
+     "Ce", 
+     "Pr", 
+     "Nd", 
+     "Pm", 
+     "Sm", 
+     "Eu", 
+     "Gd", 
+     "Tb", 
+     "Dy", 
+     "Ho", 
+     "Er", 
+     "Tm", 
+     "Yb", 
+     "Lu", 
+     "Hf", 
+     "Ta", 
+     "W", 
+     "Re", 
+     "Os", 
+     "Ir", 
+     "Pt", 
+     "Au", 
+     "Hg", 
+     "Tl", 
+     "Pb", 
+     "Bi", 
+     "Po", 
+     "At", 
+     "Rn", 
+     "Fr", 
+     "Ra", 
+     "Ac", 
+     "Th", 
+     "Pa", 
+     "U", 
+     "Np", 
+     "Pu", 
+     "Am", 
+     "Cm", 
+     "Bk", 
+     "Cf", 
+     "Es", 
+     "Fm", 
+     "Md", 
+     "No", 
+     "Lr", 
+     "Rf", 
+     "Db", 
+     "Sg", 
+     "Bh", 
+     "Hs", 
+     "Mt", 
+     "Ds", 
+     "Rg", 
+     "Cn", 
+     "Nh", 
+     "Fl", 
+     "Mc", 
+     "Lv", 
+     "Ts", 
+     "Og"])
 ELEMENT_NAMES = []
-for element in md.get_all_elements():
-    ELEMENT_SYMBOLS.append(element.symbol)
-    ELEMENT_NAMES.append(element.name)
-DIATOMIC_ELEMENTS = ("H", "N", "O", "F", "Cl", "Br", "I")
+for symbol in ELEMENT_SYMBOLS:
+    ELEMENT_NAMES.append(table.symbol(symbol).name)
+ELEMENT_NAMES = tuple(ELEMENT_NAMES)
 
 # This module contains functions to parse chemical formulas into dictionaries of elements and/or polyatomic ions and their counts
 # This module also contains functions to determine characteristics of chemical formulas, such as whether they contain polyatomic ions
@@ -161,24 +308,24 @@ def is_ionic(poly_element_dict : dict[str, int]) -> bool:
         if poly_element in POLYATOMIC_IONS:
             return True
         else:
-            element_instance = md.element(poly_element)
-            if element_instance is None:
+            try:
+                element_instance = table.symbol(poly_element)
+                if element_instance.series in ["Alkali metals", "Alkaline earth metals", "Transition metals", "Poor metals", "Lanthanides", "Actinides"]:
+                    return True
+            except ValueError:
                 raise ValueError(f"Polyatomic ion or element is invalid: {poly_element}")
-            if element_instance.series in ["Alkali metals", "Alkaline earth metals", "Transition metals", "Poor metals", "Lanthanides", "Actinides"]:
-                return True
     return False  
-
 
 # Molar Mass Function:
 def calculate_molar_mass(element_dict : dict[str, int]) -> float:
     molar_mass = 0.0
     # iterate through the element dictionary and calculate the molar mass
     for element, count in element_dict.items():
-        # get the element instance from mendeleev
-        element_instance = md.element(element)
-        #verify the element instance is valid
-        if element_instance is None:
+        try:
+            # get the element instance from periodictable
+            element_instance = table.symbol(element)
+        except ValueError:
             raise ValueError(f"Invalid element symbol: {element}")
         #add the atomic weight of the element multiplied by its count to the molar mass
-        molar_mass += element_instance.atomic_weight * count
+        molar_mass += element_instance.mass * count
     return molar_mass

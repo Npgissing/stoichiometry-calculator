@@ -1,5 +1,6 @@
 from src.stoich.substance_name import name_compound_simple
 
+
 def test_name_compound_simple():
     assert name_compound_simple({"O": 2}) == "Oxygen"
     assert name_compound_simple({"H": 2, "O": 1}) == "Dihydrogen monoxide"

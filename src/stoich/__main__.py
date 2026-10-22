@@ -1,9 +1,11 @@
-#from src.stoich.gui import run
-from src.stoich.table import table
+from src.stoich.gui import run
+import src.stoich.formula_parser as fp
+
 
 def main():
-    #run()
-    print(table.H.diatomic == True)
+    # run()
+    print(fp.get_element_dict("O2"))
+
 
 if __name__ == "__main__":
     main()

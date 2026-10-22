@@ -5,7 +5,8 @@ import src.stoich.formula_parser as fp
 
 # This module contains functions for parsing and balancing chemical equations.
 
-def parse_equation(equation : str) -> list[Substance]:
+
+def parse_equation(equation: str) -> list[Substance]:
     if re.search(r"(<=>|<->)", equation):
         return parse_equilibrium(equation)
     elif re.search(r"->", equation):
@@ -13,8 +14,10 @@ def parse_equation(equation : str) -> list[Substance]:
     else:
         raise ValueError(f"Equation not formatted correctly: {equation}")
 
-def parse_equilibrium(equation : str) -> None:
+
+def parse_equilibrium(equation: str) -> None:
     pass
+
 
 def parse_reaction(equation: str) -> list[Substance]:
     prod_react_split = re.split(r"->", equation)
@@ -29,7 +32,8 @@ def parse_reaction(equation: str) -> list[Substance]:
         prod_react_list.append(Substance(product, is_product=True))
     return prod_react_list
 
-def balance_equation(prod_react_list : list[Substance]) -> dict[Substance, int]:
+
+def balance_equation(prod_react_list: list[Substance]) -> dict[Substance, int]:
     # create a set order of polyatomic ions/elements so that the matrix can be constructed consistently
     poly_element_ordered_list = []
     # iterate through all substances and add just one instance of a polyatomic ion/element to the ordered list
@@ -58,7 +62,9 @@ def balance_equation(prod_react_list : list[Substance]) -> dict[Substance, int]:
         raise ValueError("No solution found for the given equation.")
     for i in range(len(null_vectors[0])):
         null_vectors[0][i] = sp.Abs(null_vectors[0][i])
-    denoms = [null_vectors[0][i].as_numer_denom()[1] for i in range(len(null_vectors[0]))]
+    denoms = [
+        null_vectors[0][i].as_numer_denom()[1] for i in range(len(null_vectors[0]))
+    ]
     lcm = sp.lcm(denoms)
     for i in range(len(null_vectors[0])):
         null_vectors[0][i] = null_vectors[0][i] * lcm
@@ -66,8 +72,9 @@ def balance_equation(prod_react_list : list[Substance]) -> dict[Substance, int]:
     for i in range(len(prod_react_list)):
         balanced_dict[prod_react_list[i]] = int(null_vectors[0][i])
     return balanced_dict
-    
-def get_multi_dict(list : list[str]) -> dict[str, int]:
+
+
+def get_multi_dict(list: list[str]) -> dict[str, int]:
     final_dict = {}
     for element in list:
         if fp.contains_polyatomic_ions(element):
@@ -85,4 +92,3 @@ def get_multi_dict(list : list[str]) -> dict[str, int]:
                 else:
                     final_dict[subelement] = count
     return final_dict
-

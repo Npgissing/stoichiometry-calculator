@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import src.stoich.equation_parser as ep
 
+
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -11,7 +12,9 @@ class App(ctk.CTk):
         self.entry = ctk.CTkEntry(self, placeholder_text="Enter a chemical equation")
         self.entry.pack(padx=20, pady=20, fill="x")
 
-        self.button = ctk.CTkButton(self, text="Balance Equation", command=self.balance_equation)
+        self.button = ctk.CTkButton(
+            self, text="Balance Equation", command=self.balance_equation
+        )
         self.button.pack(padx=20, pady=20)
 
         self.result = ctk.CTkLabel(self, text="", wraplength=600)
@@ -31,5 +34,6 @@ class App(ctk.CTk):
             # Handle the error (e.g., show a message box)
             print(e)
 
+
 def run():
-        App().mainloop()
+    App().mainloop()

@@ -3,6 +3,7 @@ import src.stoich.substance_name as name
 
 # Substance class representing a chemical substance with its properties and methods
 
+
 class Substance:
 
     def __init__(self, formula, is_reactant=False, is_product=False):
@@ -23,7 +24,7 @@ class Substance:
     def __str__(self):
         return f"Substance: {self.formula}, Name: {self.name}"
 
-    def get_count(self, poly_element : str) -> int:
+    def get_count(self, poly_element: str) -> int:
         # returns the count of a certain element or polyatomic ion in a substance
         # if the element or polyatomic ion isn't in the substance, return 0
         if poly_element in self.poly_element_dict:
@@ -31,10 +32,10 @@ class Substance:
         else:
             return 0
 
-    def  get_moles(self, mass : float) -> float:
+    def get_moles(self, mass: float) -> float:
         # returns the number of moles of a substance given the mass in grams
         return mass / self.molar_mass
 
-    def get_mass(self, moles : float) -> float:
+    def get_mass(self, moles: float) -> float:
         # returns the mass in grams of a substance given the number of moles
         return moles * self.molar_mass

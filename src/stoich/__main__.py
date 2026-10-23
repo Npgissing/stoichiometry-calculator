@@ -1,10 +1,14 @@
 from src.stoich.gui import run
-import src.stoich.formula_parser as fp
+import src.stoich.equation_parser as ep
+from src.stoich.substance import Substance
+from src.stoich.table import table
 
 
 def main():
     # run()
-    print(fp.get_element_dict("O2"))
+    equation = "H2 + O2 -> H2O"
+    for substance, count in ep.balance_equation(ep.parse_equation(equation)).items():
+        print(f"{substance.formula}, {substance.name}: {count}")
 
 
 if __name__ == "__main__":

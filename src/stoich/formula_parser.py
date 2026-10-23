@@ -279,7 +279,12 @@ def get_poly_element(formula: str) -> dict[str, int]:
                 poly_element_dict[ion] = 1
                 formula = formula.replace(f"{ion}", "")
         if formula == "":
-            return poly_element_dict
+            if len(poly_element_dict) == 1:
+                if poly_element_dict.get("O2"):
+                    return get_element_no_parentheses("O2")
+                raise ValueError(
+                    f"Polyatomic ion not formatted as ion: {list(poly_element_dict.keys())[0]}"
+                )
         remaining_dict = get_element_no_parentheses(formula)
         for element, count in remaining_dict.items():
             poly_element_dict[element] = count

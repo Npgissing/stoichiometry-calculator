@@ -20,16 +20,15 @@ class App(ctk.CTk):
         self.result = ctk.CTkLabel(self, text="", wraplength=600)
         self.result.pack(padx=20, pady=20)
 
-    def balance_equation(self):
+    def balance_equation(self) -> str:
         equation = self.entry.get()
         # Implementation for balancing equation would go here
         try:
             prod_react_list = ep.parse_equation(equation)
             balanced_dict = ep.balance_equation(prod_react_list)
-            # Display the balanced equation or coefficients
-            print("Balanced Equation:")
-            for substance, coefficient in balanced_dict.items():
-                print(f"{coefficient} {substance.name}")
+            equation = ep.format_reaction(balanced_dict)
+            print(equation)
+            self.result.configure(text=equation)
         except ValueError as e:
             # Handle the error (e.g., show a message box)
             print(e)

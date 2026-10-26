@@ -74,6 +74,25 @@ def balance_equation(prod_react_list: list[Substance]) -> dict[Substance, int]:
     return balanced_dict
 
 
+def format_reaction(balanced_dict: dict[Substance, int]):
+    react_list = []
+    prod_list = []
+    for substance, count in balanced_dict.items():
+        if substance.is_reactant:
+            if count == 1:
+                react_list.append(substance.formula)
+            else:
+                react_list.append(f"{count} {substance.formula}")
+        elif substance.is_product:
+            if count == 1:
+                prod_list.append(substance.formula)
+            else:
+                prod_list.append(f"{count} {substance.formula}")
+    react_str = " + ".join(react_list)
+    prod_str = " + ".join(prod_list)
+    return f"{react_str} -> {prod_str}"
+
+
 def get_multi_dict(list: list[str]) -> dict[str, int]:
     final_dict = {}
     for element in list:

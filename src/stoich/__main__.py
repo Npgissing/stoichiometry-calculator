@@ -1,14 +1,13 @@
 from src.stoich.gui import run
-import src.stoich.equation_parser as ep
-from src.stoich.substance import Substance
-from src.stoich.table import table
+from matplotlib.mathtext import math_to_image
+from pathlib import Path
 
 
 def main():
     # run()
-    equation = "H2 + O2 -> H2O"
-    for substance, count in ep.balance_equation(ep.parse_equation(equation)).items():
-        print(f"{substance.formula}, {substance.name}: {count}")
+    equation = r"$2 H_{2} + O_{2} \rightarrow 2 H_{2}O$"
+    image_file = Path.cwd() / "assets" / "images" / "equation.svg"
+    math_to_image(equation, image_file, format="svg")
 
 
 if __name__ == "__main__":

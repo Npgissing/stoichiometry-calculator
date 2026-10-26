@@ -7,16 +7,16 @@ import src.stoich.substance_name as name
 class Substance:
 
     def __init__(self, formula, is_reactant=False, is_product=False):
-        self.formula = formula
-        self.element_dict = fp.get_element_dict(formula)
-        self.poly_element_dict = fp.get_poly_element(formula)
-        self.molar_mass = fp.calculate_molar_mass(self.element_dict)
-        self.charge = fp.get_charge(formula)
-        self.name = name.name_compound_simple(self.poly_element_dict)
-        self.is_ion = fp.is_ion(formula)
-        self.is_polyatomic_ion = fp.is_polyatomic_ion(formula)
-        self.is_reactant = is_reactant
-        self.is_product = is_product
+        self.formula: str = formula
+        self.element_dict: dict[str, int] = fp.get_element_dict(formula)
+        self.poly_element_dict: dict[str, int] = fp.get_poly_element(formula)
+        self.molar_mass: float = fp.calculate_molar_mass(self.element_dict)
+        self.charge: int = fp.get_charge(formula)
+        self.name: str = name.name_compound_simple(self.poly_element_dict)
+        self.is_ion: bool = fp.is_ion(formula)
+        self.is_polyatomic_ion: bool = fp.is_polyatomic_ion(formula)
+        self.is_reactant: bool = is_reactant
+        self.is_product: bool = is_product
 
     def __repr__(self):
         return f"Substance(formula='{self.formula}', molar_mass={self.molar_mass}, charge={self.charge}, name='{self.name}', is_ion={self.is_ion}, is_polyatomic_ion={self.is_polyatomic_ion}, is_reactant={self.is_reactant}, is_product={self.is_product})"

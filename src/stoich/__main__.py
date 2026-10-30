@@ -1,13 +1,18 @@
 from src.stoich.gui import run
-from matplotlib.mathtext import math_to_image
-from pathlib import Path
+import src.stoich.equation_parser as ep
+from src.stoich.substance import Substance
+import re
 
 
 def main():
+    ep.generate_equation_image(
+        ep.format_equation_latex(
+            ep.format_reaction(
+                ep.balance_equation(ep.parse_equation("K+1 + NO3-1 -> KNO3"))
+            )
+        )
+    )
     # run()
-    equation = r"$2 H_{2} + O_{2} \rightarrow 2 H_{2}O$"
-    image_file = Path.cwd() / "assets" / "images" / "equation.svg"
-    math_to_image(equation, image_file, format="svg")
 
 
 if __name__ == "__main__":

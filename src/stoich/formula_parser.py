@@ -178,6 +178,8 @@ def get_element_dict(formula: str) -> dict[str, int]:
 
 
 def get_element_with_parentheses(formula: str) -> dict[str, int]:
+    if re.findall(r"(\+|-)(\d+)", formula):
+        formula = re.sub(r"(\+|-)(\d+)", "", formula)
     # remove the whitespace from the formula
     formula = re.sub(r"\s+", "", formula)
     # find all the parentheses in the formula
@@ -209,6 +211,8 @@ def get_element_with_parentheses(formula: str) -> dict[str, int]:
 
 
 def get_element_no_parentheses(formula: str) -> dict[str, int]:
+    if re.findall(r"(\+|-)(\d+)", formula):
+        formula = re.sub(r"(\+|-)(\d+)", "", formula)
     # remove the whitespace from the formula
     formula = re.sub(r"\s+", "", formula)
     # add a space before each element symbol to separate them
@@ -234,7 +238,7 @@ def get_polyatomic_ions(formula: str) -> dict[str, int]:
     # check if the formula contains parentheses, which indicates the presence of polyatomic ions
     if bool(re.search(r"\(", formula)):
         # find all the parentheses in the formula
-        parentheses = re.findall(r"\((.*?)\)(\d*)", formula)
+        parentheses = re.findall(r"(\(.*?\))(\d*)", formula)
         # create a list to store the polyatomic ions
         polyatomic_ions = {}
         # iterate through the parentheses and their counts
@@ -254,6 +258,10 @@ def get_polyatomic_ions(formula: str) -> dict[str, int]:
 
 
 def get_poly_element(formula: str) -> dict[str, int]:
+    poly_element_correct_format = False
+    if re.findall(r"(\+|-)(\d+)", formula):
+        formula = re.sub(r"(\+|-)(\d+)", "", formula)
+        poly_element_correct_format = True
     # check if the formula contains parentheses, which indicates the presence of polyatomic ions
     if bool(re.search(r"\(", formula)):
         # find all the parentheses in the formula
@@ -282,6 +290,8 @@ def get_poly_element(formula: str) -> dict[str, int]:
             if len(poly_element_dict) == 1:
                 if poly_element_dict.get("O2"):
                     return get_element_no_parentheses("O2")
+                elif poly_element_correct_format:
+                    return poly_element_dict
                 raise ValueError(
                     f"Polyatomic ion not formatted as ion: {list(poly_element_dict.keys())[0]}"
                 )

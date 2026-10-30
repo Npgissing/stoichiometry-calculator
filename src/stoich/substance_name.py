@@ -24,10 +24,11 @@ ELEMENT_STEMS = frozendict(
 # This module contains functions to name chemical compounds based on their a list of the elements and polyatomic ions present
 
 
-# Currently doesn't support ions, only non charged compounds, also no polyatomic ions
 def name_compound_simple(poly_element_dict: dict[str, int]) -> str:
     if len(poly_element_dict) == 1:
         key = list(poly_element_dict.keys())[0]
+        if key in POLYATOMIC_IONS:
+            return POLYATOMIC_IONS[key][0].capitalize()
         element_instance = table.symbol(key)
         return element_instance.name.capitalize()
     # iterate through the elements in the compound and check if any of them are metals

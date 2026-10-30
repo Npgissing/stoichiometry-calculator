@@ -2,6 +2,9 @@ import re
 import sympy as sp
 from src.stoich.substance import Substance
 import src.stoich.formula_parser as fp
+from matplotlib.mathtext import math_to_image
+import matplotlib as mpl
+from pathlib import Path
 
 # This module contains functions for parsing and balancing chemical equations.
 
@@ -15,7 +18,7 @@ def parse_equation(equation: str) -> list[Substance]:
         raise ValueError(f"Equation not formatted correctly: {equation}")
 
 
-def parse_equilibrium(equation: str) -> None:
+def parse_equilibrium(equation: str) -> list[Substance]:
     pass
 
 
@@ -74,7 +77,7 @@ def balance_equation(prod_react_list: list[Substance]) -> dict[Substance, int]:
     return balanced_dict
 
 
-def format_reaction(balanced_dict: dict[Substance, int]):
+def format_reaction(balanced_dict: dict[Substance, int]) -> str:
     react_list = []
     prod_list = []
     for substance, count in balanced_dict.items():
@@ -91,6 +94,16 @@ def format_reaction(balanced_dict: dict[Substance, int]):
     react_str = " + ".join(react_list)
     prod_str = " + ".join(prod_list)
     return f"{react_str} -> {prod_str}"
+
+
+def format_equation_latex(equation: str) -> str:
+    equation = re.sub(r"([A-Z][a-z]?)(\d+)", r"\1_{\2}", equation)
+    equation = re.sub(r"\((.*?)\)(\d+)", r"(\1)_{\2}", equation)
+    equation = re.sub(r"->", r"\\rightarrow", equation)
+    equation = re.sub(r"(<->)|(<=>)", r"\\rightleftharpoons", equation)
+    equation = re.sub(r"([+-])(1\d{0})", r"^{\1}", equation)
+    equation = re.sub(r"([+-])(\d+)", r"^{\2\1}", equation)
+    return f"${equation}$"
 
 
 def get_multi_dict(list: list[str]) -> dict[str, int]:
@@ -111,3 +124,17 @@ def get_multi_dict(list: list[str]) -> dict[str, int]:
                 else:
                     final_dict[subelement] = count
     return final_dict
+
+
+def generate_equation_image(formatted_equation: str):
+    old = mpl.rcParams["savefig.transparent"]
+    mpl.rcParams["savefig.transparent"] = True
+    image_file_light = Path.cwd() / "assets" / "images" / "equation_light.png"
+    image_file_dark = Path.cwd() / "assets" / "images" / "equation_dark.png"
+    try:
+        math_to_image(formatted_equation, image_file_light, dpi=500, format="png")
+        math_to_image(
+            formatted_equation, image_file_dark, dpi=500, format="png", color="white"
+        )
+    finally:
+        mpl.rcParams["savefig.transparent"] = old

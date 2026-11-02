@@ -1,10 +1,11 @@
 import re
 import sympy as sp
-from src.stoich.substance import Substance
-import src.stoich.formula_parser as fp
-from matplotlib.mathtext import math_to_image
 import matplotlib as mpl
+import src.stoich.formula_parser as fp
+from src.stoich.substance import Substance
+from matplotlib.mathtext import math_to_image
 from pathlib import Path
+from matplotlib.font_manager import FontProperties
 
 # This module contains functions for parsing and balancing chemical equations.
 
@@ -132,9 +133,20 @@ def generate_equation_image(formatted_equation: str):
     image_file_light = Path.cwd() / "assets" / "images" / "equation_light.png"
     image_file_dark = Path.cwd() / "assets" / "images" / "equation_dark.png"
     try:
-        math_to_image(formatted_equation, image_file_light, dpi=500, format="png")
         math_to_image(
-            formatted_equation, image_file_dark, dpi=500, format="png", color="white"
+            formatted_equation,
+            image_file_light,
+            prop=FontProperties(math_fontfamily="cm"),
+            dpi=500,
+            format="png",
+        )
+        math_to_image(
+            formatted_equation,
+            image_file_dark,
+            prop=FontProperties(math_fontfamily="cm"),
+            dpi=500,
+            format="png",
+            color="white",
         )
     finally:
         mpl.rcParams["savefig.transparent"] = old

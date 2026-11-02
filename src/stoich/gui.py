@@ -9,34 +9,32 @@ class App(ctk.CTk):
         super().__init__()
         self._set_appearance_mode("system")
         self.title("Stoichiometry Calculator")
-        self.geometry("800x600")
+        self.geometry("464x638")
         self.resizable(True, True)
 
-        equation_path_light = Path.cwd() / "assets" / "images" / "equation_light.png"
-        equation_path_dark = Path.cwd() / "assets" / "images" / "equation_dark.png"
+        default_image_path = Path.cwd() / "assets" / "images" / "default.png"
 
-        self.equation_image = ctk.CTkImage(
-            light_image=Image.open(equation_path_light),
-            dark_image=Image.open(equation_path_dark),
-            size=(300, 100),
-        )
-        self.equation_image_label = ctk.CTkLabel(
-            self, image=self.equation_image, text=""
-        )
-        self.equation_image_label.pack(padx=20, pady=20)
+        size = (1, 1)
+        default_image = Image.new("RGBA", size, (0, 0, 0, 0))
+        default_image.save(default_image_path)
 
-        """self.entry = ctk.CTkEntry(self, placeholder_text="Enter a chemical equation")
-        self.entry.pack(padx=20, pady=20, fill="x")
+        self.entry = ctk.CTkEntry(self, placeholder_text="Enter a chemical equation")
+        self.entry.pack(padx=20, pady=10, fill="x")
 
         self.button = ctk.CTkButton(
             self, text="Balance Equation", command=self.balance_equation
         )
-        self.button.pack(padx=20, pady=20)
+        self.button.pack(padx=20, pady=10)
 
-        self.result = ctk.CTkLabel(self, text="", wraplength=600)
-        self.result.pack(padx=20, pady=20)
-
-        """
+        self.equation_image = ctk.CTkImage(
+            light_image=Image.open(default_image_path),
+            dark_image=Image.open(default_image_path),
+            size=Image.open(default_image_path).size,
+        )
+        self.equation_image_label = ctk.CTkLabel(
+            self, image=self.equation_image, text=""
+        )
+        self.equation_image_label.pack(padx=20, pady=10)
 
     def balance_equation(self) -> str:
         equation = self.entry.get()
@@ -46,7 +44,29 @@ class App(ctk.CTk):
             balanced_dict = ep.balance_equation(prod_react_list)
             equation = ep.format_reaction(balanced_dict)
             print(equation)
-            self.result.configure(text=equation)
+
+            equation_path_light = (
+                Path.cwd() / "assets" / "images" / "equation_light.png"
+            )
+            equation_path_dark = Path.cwd() / "assets" / "images" / "equation_dark.png"
+
+            ep.generate_equation_image(ep.format_equation_latex(equation))
+
+            with Image.open(equation_path_light) as light_img:
+                equation_light = light_img.copy()
+            with Image.open(equation_path_dark) as dark_img:
+                equation_dark = dark_img.copy()
+
+            horizontal, vertical = equation_light.size
+            refitted = (horizontal / vertical * 30, 30)
+
+            self.equation_image = ctk.CTkImage(
+                light_image=equation_light,
+                dark_image=equation_dark,
+                size=refitted,
+            )
+
+            self.equation_image_label.configure(image=self.equation_image)
         except ValueError as e:
             # Handle the error (e.g., show a message box)
             print(e)

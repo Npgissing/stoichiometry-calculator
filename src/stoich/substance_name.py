@@ -103,12 +103,12 @@ def name_covalent_compound(poly_element_dict: dict[str, int]) -> str:
                 covalent_name += element_instance.name.capitalize()
             # otherwise include the prefix
             else:
-                covalent_name += f"{prefixes[count - 1].capitalize()}{element_instance.name.lower()} "
+                covalent_name += (
+                    f"{prefixes[count - 1].capitalize()}{element_instance.name.lower()} "
+                )
         else:
             # include the prefix for the second element
-            covalent_name += (
-                f"{prefixes[count - 1].lower()}{ELEMENT_STEMS[element].lower()}ide"
-            )
+            covalent_name += f"{prefixes[count - 1].lower()}{ELEMENT_STEMS[element].lower()}ide"
         element_place += 1
     # remove the double vowels
     covalent_name = re.sub(r"(oo|ao)", r"o", covalent_name).strip()
@@ -125,9 +125,9 @@ def name_cation(cation: str, anion: str, poly_element_dict: dict[str, int]) -> s
             element_instance = table.symbol(cation)
         except ValueError:
             raise ValueError(f"Invalid element symbol: {cation}")
-        if (
-            element_instance.symbol in SET_CHARGE_CATIONS
-            or element_instance.series in ("Alkali metals", "Alkaline earth metals")
+        if element_instance.symbol in SET_CHARGE_CATIONS or element_instance.series in (
+            "Alkali metals",
+            "Alkaline earth metals",
         ):
             return f"{element_instance.name.capitalize()}"
         else:
@@ -150,9 +150,7 @@ def name_anion(anion: str) -> str:
             raise ValueError(f"Element stem not known: {anion}")
 
 
-def get_cation_charge(
-    cation: str, anion: str, poly_element_dict: dict[str, int]
-) -> int:
+def get_cation_charge(cation: str, anion: str, poly_element_dict: dict[str, int]) -> int:
     # returns the charge of a cation based on the anion and the polyatomic ions present in the compound
     anion_charge = 0
     # if the cation is a polyatomic ion, get its charge from the POLYATOMIC_IONS list
@@ -196,9 +194,7 @@ def get_cation_charge(
 
 def roman_numeral(num: int) -> str:
     # returns the roman numeral representation of a number
-    roman_numerals = frozendict(
-        {50: "L", 40: "XL", 10: "X", 9: "IX", 5: "V", 4: "IV", 1: "I"}
-    )
+    roman_numerals = frozendict({50: "L", 40: "XL", 10: "X", 9: "IX", 5: "V", 4: "IV", 1: "I"})
 
     roman_num = ""
     for roman_number in roman_numerals:

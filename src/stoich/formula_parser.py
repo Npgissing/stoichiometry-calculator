@@ -350,9 +350,7 @@ def is_ionic(poly_element_dict: dict[str, int]) -> bool:
                 ]:
                     return True
             except ValueError:
-                raise ValueError(
-                    f"Polyatomic ion or element is invalid: {poly_element}"
-                )
+                raise ValueError(f"Polyatomic ion or element is invalid: {poly_element}")
     return False
 
 

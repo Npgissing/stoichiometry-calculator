@@ -2,7 +2,6 @@ import customtkinter as ctk
 import src.stoich.equation_parser as ep
 from pathlib import Path
 from PIL import Image
-from time import sleep
 
 # Create a default image
 default_image_path = Path.cwd() / "assets" / "images" / "default.png"
@@ -29,9 +28,25 @@ class App(ctk.CTk):
         self.balance_equation_button.pack(padx=20, pady=10)
 
     def reset(self):
-        pass
+        try:
+            self.equation_image_label.destroy()
+        except AttributeError:
+            pass
+        try:
+            self.equation_amounts_frame.destroy()
+        except AttributeError:
+            pass
+        try:
+            self.calculate_button.destroy()
+        except AttributeError:
+            pass
+        try:
+            self.results_frame.destroy()
+        except AttributeError:
+            pass
 
     def balance_equation(self):
+        self.reset()
         equation = self.entry.get()
         # Implementation for balancing equation would go here
         try:
@@ -112,7 +127,7 @@ class ResultsFrame(ctk.CTkFrame):
                 )
             label = ctk.CTkLabel(
                 self,
-                text=(f"{list(self.final_results.values())[i // 2]}" if i % 2 == 1 else ""),
+                text=(f"{list(self.final_results.values())[i // 2]:.3f}" if i % 2 == 1 else ""),
                 image=(
                     ctk.CTkImage(
                         light_image=light,

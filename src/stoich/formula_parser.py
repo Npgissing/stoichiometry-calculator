@@ -292,9 +292,7 @@ def get_poly_element(formula: str) -> dict[str, int]:
                     return get_element_no_parentheses("O2")
                 elif poly_element_correct_format:
                     return poly_element_dict
-                raise ValueError(
-                    f"Polyatomic ion not formatted as ion: {list(poly_element_dict.keys())[0]}"
-                )
+                raise ValueError(f"Polyatomic ion not formatted as ion: {list(poly_element_dict.keys())[0]}")
         remaining_dict = get_element_no_parentheses(formula)
         for element, count in remaining_dict.items():
             poly_element_dict[element] = count

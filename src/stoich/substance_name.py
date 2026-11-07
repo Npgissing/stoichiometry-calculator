@@ -3,9 +3,7 @@ import re
 import src.stoich.formula_parser as fp
 
 POLYATOMIC_IONS = fp.POLYATOMIC_IONS
-SET_CHARGE_CATIONS = frozendict(
-    {"Al": 3, "Zn": 2, "Cd": 2, "Ag": 1, "Sc": 3, "Y": 3, "La": 3, "Ac": 3}
-)
+SET_CHARGE_CATIONS = frozendict({"Al": 3, "Zn": 2, "Cd": 2, "Ag": 1, "Sc": 3, "Y": 3, "La": 3, "Ac": 3})
 ELEMENT_STEMS = frozendict(
     {
         "H": "Hydr",
@@ -103,9 +101,7 @@ def name_covalent_compound(poly_element_dict: dict[str, int]) -> str:
                 covalent_name += element_instance.name.capitalize()
             # otherwise include the prefix
             else:
-                covalent_name += (
-                    f"{prefixes[count - 1].capitalize()}{element_instance.name.lower()} "
-                )
+                covalent_name += f"{prefixes[count - 1].capitalize()}{element_instance.name.lower()} "
         else:
             # include the prefix for the second element
             covalent_name += f"{prefixes[count - 1].lower()}{ELEMENT_STEMS[element].lower()}ide"

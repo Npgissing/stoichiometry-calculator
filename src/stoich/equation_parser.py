@@ -1,7 +1,6 @@
 import re
 import sympy as sp
 import matplotlib as mpl
-import src.stoich.formula_parser as fp
 from src.stoich.substance import Substance
 from matplotlib.mathtext import math_to_image
 from pathlib import Path
@@ -217,50 +216,35 @@ def calculate_equation(
         raise ValueError(f"Unknown equation type: {equation_type}")
 
 
-def calculate_reaction(
-    equation_dict: dict[Substance, int], equation_amounts: list[float]
-) -> dict[Substance, float]:
+def calculate_reaction(equation_dict: dict[Substance, int], equation_amounts: list[float]) -> dict[Substance, float]:
     # find the limiting reactant using the get_limiting_reactant function and find its index and amount
     limiting_reactant = get_limiting_reactant(equation_dict, equation_amounts)
     limiting_index = list(equation_dict.keys()).index(limiting_reactant)
     limiting_amount = equation_amounts[limiting_index]
     # calculate the final amounts of each substance in the equation based on the limiting reactant and its amount
     final_results = {}
-    for substance, count, amount in zip(
-        equation_dict.keys(), equation_dict.values(), equation_amounts
-    ):
+    for substance, count, amount in zip(equation_dict.keys(), equation_dict.values(), equation_amounts):
         if substance.is_reactant:
-            final_results[substance] = amount - (
-                limiting_amount * (count / equation_dict[limiting_reactant])
-            )
+            final_results[substance] = amount - (limiting_amount * (count / equation_dict[limiting_reactant]))
         elif substance.is_product:
-            final_results[substance] = amount + (
-                limiting_amount * (count / equation_dict[limiting_reactant])
-            )
+            final_results[substance] = amount + (limiting_amount * (count / equation_dict[limiting_reactant]))
     return final_results
 
 
-def calculate_equilibrium(
-    equation_dict: dict[Substance, int], equation_amounts: list[float]
-) -> dict[Substance, float]:
+def calculate_equilibrium(equation_dict: dict[Substance, int], equation_amounts: list[float]) -> dict[Substance, float]:
     pass
 
 
-def get_limiting_reactant(
-    equation_dict: dict[Substance, int], equation_amounts: list[float]
-) -> Substance:
+def get_limiting_reactant(equation_dict: dict[Substance, int], equation_amounts: list[float]) -> Substance:
     # find the limiting reactant by comparing the ratios of provided amounts to what is required based on the balanced equation
     limiting_reactant = None
     limiting_index = -1
-    for i, (substance, count, amount) in enumerate(
-        zip(equation_dict.keys(), equation_dict.values(), equation_amounts)
-    ):
+    for i, (substance, count, amount) in enumerate(zip(equation_dict.keys(), equation_dict.values(), equation_amounts)):
         if substance.is_reactant:
             if (
                 limiting_reactant is None
                 or amount / count
-                < list(equation_amounts)[limiting_index]
-                / list(equation_dict.values())[limiting_index]
+                < list(equation_amounts)[limiting_index] / list(equation_dict.values())[limiting_index]
             ):
                 limiting_reactant = substance
                 limiting_index = i

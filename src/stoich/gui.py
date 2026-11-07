@@ -2,6 +2,7 @@ import customtkinter as ctk
 import src.stoich.equation_parser as ep
 from pathlib import Path
 from PIL import Image
+from time import sleep
 
 # Create a default image
 default_image_path = Path.cwd() / "assets" / "images" / "default.png"
@@ -24,18 +25,11 @@ class App(ctk.CTk):
         self.entry = ctk.CTkEntry(self, placeholder_text="Enter a chemical equation")
         self.entry.pack(padx=20, pady=10, fill="x")
 
-        self.balance_equation_button = ctk.CTkButton(
-            self, text="Balance Equation", command=self.balance_equation
-        )
+        self.balance_equation_button = ctk.CTkButton(self, text="Balance Equation", command=self.balance_equation)
         self.balance_equation_button.pack(padx=20, pady=10)
 
-        self.equation_image = ctk.CTkImage(
-            light_image=Image.open(default_image_path),
-            dark_image=Image.open(default_image_path),
-            size=Image.open(default_image_path).size,
-        )
-        self.equation_image_label = ctk.CTkLabel(self, image=self.equation_image, text="")
-        self.equation_image_label.pack(padx=20, pady=10)
+    def reset(self):
+        pass
 
     def balance_equation(self):
         equation = self.entry.get()
@@ -53,10 +47,8 @@ class App(ctk.CTk):
 
             ep.generate_equation_image(ep.format_equation_latex(equation))
 
-            with Image.open(equation_path_light) as light_img:
-                equation_light = light_img.copy()
-            with Image.open(equation_path_dark) as dark_img:
-                equation_dark = dark_img.copy()
+            equation_light = open_image(equation_path_light)
+            equation_dark = open_image(equation_path_dark)
 
             horizontal, vertical = equation_light.size
             refitted = (horizontal / vertical * 30, 30)
@@ -66,8 +58,9 @@ class App(ctk.CTk):
                 dark_image=equation_dark,
                 size=refitted,
             )
+            self.equation_image_label = ctk.CTkLabel(self, image=self.equation_image, text="")
+            self.equation_image_label.pack(padx=20, pady=10)
 
-            self.equation_image_label.configure(image=self.equation_image)
             self.equation_amounts_frame = EntryAmounts(self, self.equation_dict)
             self.equation_amounts_frame.pack(padx=20, pady=10, fill="x")
 
@@ -85,9 +78,7 @@ class App(ctk.CTk):
             except ValueError as e:
                 # Handle the error (e.g., show a message box)
                 print(e)
-        final_results = ep.calculate_equation(
-            self.equation_dict, self.equation_amounts, self.equation_type
-        )
+        final_results = ep.calculate_equation(self.equation_dict, self.equation_amounts, self.equation_type)
         self.results_frame = ResultsFrame(self, final_results)
         print("Calculated")
 
@@ -110,32 +101,42 @@ class ResultsFrame(ctk.CTkFrame):
         super().__init__(master)
         self.final_results = final_results
         ep.generate_prod_react_image(self.final_results)
-        for i in range(len(self.final_results)):
+        for i in range(2 * len(self.final_results)):
             self.grid_columnconfigure(i, weight=1)
-            light = Image.open(
-                Path.cwd()
-                / "assets"
-                / "images"
-                / f"{list(self.final_results.keys())[i].name}_light.png"
-            )
-            dark = Image.open(
-                Path.cwd()
-                / "assets"
-                / "images"
-                / f"{list(self.final_results.keys())[i].name}_dark.png"
-            )
+            if i % 2 == 0:
+                light = open_image(
+                    Path.cwd() / "assets" / "images" / f"{list(self.final_results.keys())[i // 2].name}_light.png"
+                )
+                dark = open_image(
+                    Path.cwd() / "assets" / "images" / f"{list(self.final_results.keys())[i // 2].name}_dark.png"
+                )
             label = ctk.CTkLabel(
                 self,
-                text=f"{list(self.final_results.keys())[i].formula}: {list(self.final_results.values())[i]}",
-                image=ctk.CTkImage(
-                    light_image=light,
-                    dark_image=dark,
-                    size=(light.size[0] / light.size[1] * 10, 10),
+                text=(f"{list(self.final_results.values())[i // 2]}" if i % 2 == 1 else ""),
+                image=(
+                    ctk.CTkImage(
+                        light_image=light,
+                        dark_image=dark,
+                        size=(light.size[0] / light.size[1] * 15, 15),
+                    )
+                    if i % 2 == 0
+                    else None
                 ),
             )
             label.grid(row=0, column=i, padx=10, pady=10)
         self.pack(padx=20, pady=10, fill="x")
 
 
+def open_image(image_path: Path) -> Image.Image:
+    try:
+        with Image.open(image_path) as img:
+            return img.copy()
+    except FileNotFoundError:
+        return Image.open(Path.cwd() / "assets" / "images" / "default.png")
+
+
 def run():
     App().mainloop()
+    for file in Path.cwd().glob("assets/images/*.png"):
+        if file.name != "default.png":
+            file.unlink()
